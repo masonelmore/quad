@@ -53,6 +53,12 @@ func newNode(img image.Image, region image.Rectangle, tolerance float64) *node {
 	n.color = averageColor(img, region)
 	n.diff = difference(img, region, n.color)
 
+	// Trying to quarter a region less than 2x2 will result in a div by zero in
+	// the averageColor function.
+	if n.region.Dx() < 2 || n.region.Dy() < 2 {
+		return n
+	}
+
 	if n.diff > tolerance {
 		a, b, c, d := quarter(region)
 		n.children = []*node{
